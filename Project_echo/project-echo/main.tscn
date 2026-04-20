@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://6lyd5sw788v0"]
+
+[ext_resource type="Script" uid="uid://c5ylc42i8me6e" path="res://main.gd" id="1_ig7tw"]
+
+[node name="main" type="Node2D" unique_id=274013526]
+script = ExtResource("1_ig7tw")
+
+[node name="AIApi" type="HTTPRequest" parent="." unique_id=1699356212]
+
+[node name="TestBattleBtn" type="Button" parent="." unique_id=1672755899]
+offset_left = 419.0
+offset_top = 527.0
+offset_right = 649.0
+offset_bottom = 621.0
+text = "请求AI战术"
+
+[node name="OutputConsole" type="RichTextLabel" parent="." unique_id=1406211055]
+offset_left = 155.0
+offset_top = 1.0
+offset_right = 917.0
+offset_bottom = 512.0

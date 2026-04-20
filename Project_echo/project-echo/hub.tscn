@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://cpenxbjtk5amk"]
+
+[ext_resource type="Script" uid="uid://bjclbfwbwo1jr" path="res://hub.gd" id="1_l10or"]
+[ext_resource type="PackedScene" uid="uid://4qle7el4d2ff" path="res://inventory_ui.tscn" id="2_hjueh"]
+
+[node name="Hub" type="Control" unique_id=245927225]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_l10or")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1945755526]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3137255, 0.5176471, 1, 1)
+
+[node name="DynamicLocationUI" type="Control" parent="." unique_id=1131167928]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FixedUI" type="CanvasLayer" parent="." unique_id=506307217]
+
+[node name="InteractBtn" type="Button" parent="FixedUI" unique_id=240219840]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "看看狗子
+"
+
+[node name="InventoryBtn" type="Button" parent="FixedUI" unique_id=1888680701]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Inventory_UI" parent="." unique_id=203406705 instance=ExtResource("2_hjueh")]
+visible = false
+layout_mode = 1

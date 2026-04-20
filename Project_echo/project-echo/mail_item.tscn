@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://doygvysqrfpni"]
+
+[ext_resource type="Script" uid="uid://btee4p1fcwtyq" path="res://mail_item.gd" id="1_4h2bd"]
+
+[node name="MailItem" type="PanelContainer" unique_id=775123925]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4h2bd")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=577643578]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=272072335]
+layout_mode = 2
+
+[node name="SenderLabel" type="Label" parent="VBoxContainer" unique_id=1484596743]
+layout_mode = 2
+
+[node name="ContentLabel" type="Label" parent="VBoxContainer" unique_id=1513779824]
+layout_mode = 2

@@ -1,0 +1,156 @@
+[gd_scene format=3 uid="uid://bhvfrjxxiy8h3"]
+
+[ext_resource type="Script" uid="uid://cpg7lfkgn250b" path="res://chat_page.gd" id="1_i6w21"]
+
+[node name="Chatpage" type="Control" unique_id=1048764902]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i6w21")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=208675675]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="HBoxContainer" parent="VBoxContainer" unique_id=412765332]
+layout_mode = 2
+
+[node name="Change" type="Button" parent="VBoxContainer/TopBar" unique_id=1139974740]
+layout_mode = 2
+text = "切换宝可梦"
+
+[node name="PetName" type="Label" parent="VBoxContainer/TopBar" unique_id=2076156826]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+
+[node name="Return" type="Button" parent="VBoxContainer/TopBar" unique_id=1063698326]
+layout_mode = 2
+text = "返回"
+
+[node name="CenterStage" type="Control" parent="VBoxContainer" unique_id=1334495631]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatsBox" type="VBoxContainer" parent="VBoxContainer/CenterStage" unique_id=1163153590]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -50.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 1
+
+[node name="MoodLabel" type="Label" parent="VBoxContainer/CenterStage/StatsBox" unique_id=1002238361]
+layout_mode = 2
+
+[node name="TrustLabel" type="Label" parent="VBoxContainer/CenterStage/StatsBox" unique_id=961675367]
+layout_mode = 2
+
+[node name="ChatBubble" type="PanelContainer" parent="VBoxContainer/CenterStage" unique_id=1781038067]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BubbleText" type="RichTextLabel" parent="VBoxContainer/CenterStage/ChatBubble" unique_id=207048193]
+layout_mode = 2
+
+[node name="ChatHistory" type="Button" parent="VBoxContainer/CenterStage" unique_id=1478378217]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -172.0
+offset_top = 50.0
+offset_right = -100.0
+offset_bottom = 81.0
+grow_horizontal = 0
+text = "聊天记录"
+
+[node name="BottomPanel" type="VBoxContainer" parent="VBoxContainer" unique_id=195932946]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/BottomPanel" unique_id=721094061]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ItemList" type="HBoxContainer" parent="VBoxContainer/BottomPanel/ScrollContainer" unique_id=669932097]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="VBoxContainer/BottomPanel/ScrollContainer/ItemList" unique_id=1629279871]
+layout_mode = 2
+text = "草莓"
+
+[node name="Button2" type="Button" parent="VBoxContainer/BottomPanel/ScrollContainer/ItemList" unique_id=1195402060]
+layout_mode = 2
+text = "西瓜"
+
+[node name="Button3" type="Button" parent="VBoxContainer/BottomPanel/ScrollContainer/ItemList" unique_id=1761299971]
+layout_mode = 2
+text = "葡萄"
+
+[node name="InputArea" type="HBoxContainer" parent="VBoxContainer/BottomPanel" unique_id=405529615]
+layout_mode = 2
+
+[node name="PlayerInput" type="LineEdit" parent="VBoxContainer/BottomPanel/InputArea" unique_id=1344082287]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConfirmBtn" type="Button" parent="VBoxContainer/BottomPanel/InputArea" unique_id=1383250899]
+layout_mode = 2
+text = "发送"
+
+[node name="ActionApi" type="HTTPRequest" parent="." unique_id=1498185872]
+
+[node name="DrawerLayer" type="CanvasLayer" parent="." unique_id=1817663777]
+
+[node name="DarkMask" type="ColorRect" parent="DrawerLayer" unique_id=103716443]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="SidePanel" type="Panel" parent="DrawerLayer" unique_id=1197193916]
+offset_left = -800.0
+offset_right = -150.0
+offset_bottom = 800.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="DrawerLayer/SidePanel" unique_id=636233365]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HistoryList" type="VBoxContainer" parent="DrawerLayer/SidePanel/ScrollContainer" unique_id=594002215]
+layout_mode = 2
+
+[node name="OfflineReportLayer" type="ColorRect" parent="DrawerLayer" unique_id=1286881000]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DrawerLayer/OfflineReportLayer" unique_id=1541535254]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HistoryApi" type="HTTPRequest" parent="." unique_id=278009726]

@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cu4j0lq0dd04n"]
+
+[ext_resource type="Script" uid="uid://cfw01hckqexgl" path="res://mail_ui.gd" id="1_iv8gk"]
+[ext_resource type="PackedScene" uid="uid://doygvysqrfpni" path="res://mail_item.tscn" id="2_qlk61"]
+
+[node name="MailUI" type="Control" unique_id=711309474]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_iv8gk")
+mail_item_scene = ExtResource("2_qlk61")
+
+[node name="MailApi" type="HTTPRequest" parent="." unique_id=1101855254]
+
+[node name="TopPanel" type="Panel" parent="." unique_id=1501457988]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RefreshBtn" type="Button" parent="TopPanel" unique_id=898680393]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "刷新邮件"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=393421449]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=533841907]
+layout_mode = 2
