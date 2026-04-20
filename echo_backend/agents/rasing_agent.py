@@ -3,7 +3,7 @@ import json
 import re, os
 from dotenv import load_dotenv
 from openai import OpenAI
-from schemas import RaisingInteractRequest, RaisingInteractResponse, OfflineTaskRequest, OfflineTaskResponse, LocationTaskRequest, LocationTaskResponse
+from schemas import RaisingInteractRequest, RaisingInteractResponse, OfflineTaskRequest, OfflineTaskResponse, LocationTaskRequest, LocationTaskResponse, SettlementActionRequest, SettlementActionResponse, BuildConstructRequest, SettlementEventRequest
 
 # 为了模块化，我们假设你可以直接调用 router 内部函数，但在工业界通常提取 RAG 逻辑放到 core 中。
 # 这里我们采用一种优雅的做法：通过 HTTP 内部调用或直接复用依赖功能。
@@ -232,3 +232,174 @@ class PetRaisingAgent:
         from schemas import MailCheckResponse, MailEntity
         mails = [MailEntity(**m) for m in data.get("mails", [])]
         return MailCheckResponse(mails=mails)
+
+    # ===== 🆕 模拟经营/根据地系统处理方法 =====
+    
+    @staticmethod
+    async def handle_settlement_action(request: SettlementActionRequest) -> SettlementActionResponse:
+        """
+        🏗️ 处理根据地通用行动
+        
+        📌 当前实现：基础框架，返回模拟数据
+        📌 未来扩展：
+        - 接入大模型生成动态叙事
+        - 根据幻灵性格影响建设效率/结果
+        - 建设过程中触发特殊事件
+        - 多幻灵协作叙事
+        """
+        # TODO: 接入大模型 Prompt
+        # prompt = f"""
+        # 幻灵 {request.pet_state.pet_name} (性格：{request.pet_state.persona}) 
+        # 正在参与根据地行动：{request.action_type}
+        # 请生成符合性格的叙事文本，描述幻灵的反应和行动过程。
+        # """
+        
+        # 模拟返回
+        narrative_map = {
+            "found": f"哼，这片空地勉强能当营地吧！本大爷亲自选址，你可别浪费了啊！",
+            "build": f"建造？这种粗活也要本大爷帮忙？...算了，看在你笨手笨脚的份上。",
+            "repair": f"又坏了？你平时都不维护的吗！真是让人操心的笨蛋主人...",
+            "assign": f"又要工作？好吧好吧，别拖我后腿就行。",
+            "collect": f"收获还不错嘛，也不看看是谁在管理。",
+        }
+        
+        return SettlementActionResponse(
+            success=True,
+            narrative=narrative_map.get(request.action_type, "行动完成。"),
+            settlement_changes={},
+            resource_cost={},
+            resource_gain={},
+            mood_change=5,
+            trust_change=2,
+            unlock_flags=[]
+        )
+    
+    @staticmethod
+    async def handle_building_construct(request: BuildConstructRequest) -> SettlementActionResponse:
+        """
+        🏗️ 处理建筑建造/升级
+        
+        📌 当前实现：占位方法
+        📌 未来扩展：
+        - 建筑配置表加载（成本/效果/前置条件）
+        - 资源检查与扣除
+        - 建造队列管理
+        - 大模型生成建造叙事（幻灵吐槽/期待/自豪）
+        - 建造完成解锁新功能提示
+        """
+        # TODO: 实现完整建造逻辑
+        # 1. 检查资源是否充足
+        # 2. 检查前置建筑/等级条件
+        # 3. 扣除资源
+        # 4. 创建/升级建筑
+        # 5. 生成叙事
+        
+        return SettlementActionResponse(
+            success=True,
+            narrative=f"建造 {request.building_type} 完成！（模拟数据）",
+            settlement_changes={
+                "buildings": {
+                    request.building_type: {
+                        "level": 1,
+                        "status": "normal"
+                    }
+                }
+            },
+            resource_cost={},
+            resource_gain={},
+            mood_change=3,
+            trust_change=1,
+            unlock_flags=[]
+        )
+    
+    @staticmethod
+    async def handle_building_repair(request: SettlementActionRequest) -> SettlementActionResponse:
+        """
+        🔧 处理建筑修复
+        
+        📌 未来扩展：
+        - 修复成本计算
+        - 幻灵修复效率差异
+        - 修复叙事
+        """
+        # TODO: 实现修复逻辑
+        return SettlementActionResponse(
+            success=True,
+            narrative="修复完成（占位）",
+            settlement_changes={},
+            resource_cost={},
+            resource_gain={},
+            mood_change=2,
+            trust_change=1,
+            unlock_flags=[]
+        )
+    
+    @staticmethod
+    async def handle_pet_assignment(request: SettlementActionRequest) -> SettlementActionResponse:
+        """
+        🐾 处理幻灵分配
+        
+        📌 未来扩展：
+        - 幻灵属性/性格与建筑匹配度计算
+        - 分配后效率加成
+        - 幻灵工作心情变化
+        - 分配叙事（幻灵喜欢/讨厌某工作）
+        """
+        # TODO: 实现分配逻辑
+        return SettlementActionResponse(
+            success=True,
+            narrative="分配完成（占位）",
+            settlement_changes={},
+            resource_cost={},
+            resource_gain={},
+            mood_change=1,
+            trust_change=1,
+            unlock_flags=[]
+        )
+    
+    @staticmethod
+    async def handle_resource_collection(request: SettlementActionRequest) -> SettlementActionResponse:
+        """
+        📦 处理资源收集
+        
+        📌 未来扩展：
+        - 建筑产出计算
+        - 资源点采集逻辑
+        - 离线累积产出
+        - 暴击/额外收获
+        """
+        # TODO: 实现收集逻辑
+        return SettlementActionResponse(
+            success=True,
+            narrative="收集完成（占位）",
+            settlement_changes={},
+            resource_cost={},
+            resource_gain={"木材": 5, "石头": 3},
+            mood_change=2,
+            trust_change=1,
+            unlock_flags=[]
+        )
+    
+    @staticmethod
+    async def handle_settlement_tick(request: SettlementEventRequest) -> SettlementActionResponse:
+        """
+        ⏱️ 处理根据地周期结算
+        
+        📌 未来扩展：
+        - 建筑产出结算
+        - 随机事件触发
+        - 资源自然恢复
+        - 幻灵工作状态结算
+        - 大模型生成事件叙事
+        """
+        # TODO: 实现周期结算逻辑
+        return SettlementActionResponse(
+            success=True,
+            narrative="周期结算完成（占位）",
+            settlement_changes={},
+            resource_cost={},
+            resource_gain={},
+            mood_change=0,
+            trust_change=0,
+            unlock_flags=[]
+        )

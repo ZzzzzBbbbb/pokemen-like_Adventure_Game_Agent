@@ -29,6 +29,19 @@ var inventory = {
 var current_location_name: String = "阳光森林"
 var current_env_tags: Array = ["微风", "草地", "阳光"]
 
+# =========== 🆕 2. 根据地系统数据 ===========
+var settlement_state = {
+	"settlement_id": "",
+	"name": "无名营地",
+	"level": 1,
+	"prosperity": 0,
+	"buildings": {},
+	"resource_nodes": {},
+	"storage": {},
+	"is_established": false,
+	"last_tick_time": ""
+}
+
 # =========== 2. 生命周期 ===========
 func _ready():
 	# 游戏启动时，第一件事就是尝试加载本地存档
@@ -39,7 +52,8 @@ func save_game():
 	var save_data = {
 		"pet_state": pet_state,
 		"inventory": inventory,
-		"last_save_time": Time.get_unix_time_from_system() # 记录下线时间，用于未来算离线挂机收益
+		"settlement_state": settlement_state,
+		"last_save_time": Time.get_unix_time_from_system()
 	}
 	
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -64,6 +78,7 @@ func load_game():
 			var data = json.data
 			pet_state = data.get("pet_state", pet_state)
 			inventory = data.get("inventory", inventory)
+			settlement_state = data.get("settlement_state", settlement_state)
 			
 			var last_time = data.get("last_save_time", Time.get_unix_time_from_system())
 			var offline_seconds = Time.get_unix_time_from_system() - last_time
@@ -127,3 +142,198 @@ func add_item(item_name: String, amount: int = 1):
 		inventory[item_name] = amount
 	print("🎒 [背包] 获得物品: %s x%d" % [item_name, amount])
 	save_game() # 获得重要物品后自动保存
+
+# =========== 🆕 5. 根据地系统 API 封装 ===========
+const SETTLEMENT_BASE_URL = "http://127.0.0.1:8000/api/v1/settlement"
+
+func settlement_found(location_info: Dictionary) -> void:
+"""
+🏗️ 开辟根据地
+调用时机：玩家到达可开荒节点，满足条件后触发
+"""
+print("🏗️ [根据地] 准备开辟新根据地于：", location_info.get("name"))
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_settlement_action_completed.bind(http_request, "found"))
+
+var payload = {
+"pet_state": pet_state,
+"settlement_state": settlement_state,
+"action_type": "found",
+"target_id": null,
+"parameters": location_info
+}
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/found", headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+
+func settlement_build(building_type: String, location_id: String) -> void:
+"""
+🏗️ 建造建筑
+调用时机：玩家在建设界面点击建造按钮
+"""
+print("🏗️ [根据地] 请求建造：", building_type)
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_settlement_action_completed.bind(http_request, "build"))
+
+var payload = {
+"pet_state": pet_state,
+"settlement_state": settlement_state,
+"building_type": building_type,
+"location_id": location_id,
+"is_upgrade": false,
+"target_building_id": null
+}
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/build", headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+
+func settlement_repair(building_id: String) -> void:
+"""
+🔧 修复建筑
+调用时机：建筑耐久度不足时
+"""
+print("🔧 [根据地] 请求修复建筑：", building_id)
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_settlement_action_completed.bind(http_request, "repair"))
+
+var payload = {
+"pet_state": pet_state,
+"settlement_state": settlement_state,
+"action_type": "repair",
+"target_id": building_id,
+"parameters": {}
+}
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/repair", headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+
+func settlement_assign_pet(pet_id: String, building_id: String) -> void:
+"""
+🐾 分配幻灵到建筑
+调用时机：玩家在建筑详情界面分配幻灵
+"""
+print("🐾 [根据地] 分配幻灵到建筑：", building_id)
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_settlement_action_completed.bind(http_request, "assign"))
+
+var payload = {
+"pet_state": pet_state,
+"settlement_state": settlement_state,
+"action_type": "assign",
+"target_id": building_id,
+"parameters": {"pet_id": pet_id}
+}
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/assign", headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+
+func settlement_collect(target_id: String) -> void:
+"""
+📦 收集资源/产出
+调用时机：玩家点击收集按钮
+"""
+print("📦 [根据地] 收集资源：", target_id)
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_settlement_action_completed.bind(http_request, "collect"))
+
+var payload = {
+"pet_state": pet_state,
+"settlement_state": settlement_state,
+"action_type": "collect",
+"target_id": target_id,
+"parameters": {}
+}
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/collect", headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+
+func sync_settlement_state() -> void:
+"""
+📊 同步根据地状态
+调用时机：进入游戏、切换场景、定期同步
+"""
+print("📊 [根据地] 同步根据地状态")
+
+var http_request = HTTPRequest.new()
+add_child(http_request)
+http_request.request_completed.connect(_on_sync_settlement_state_completed.bind(http_request))
+
+var headers = ["Content-Type: application/json"]
+http_request.request(SETTLEMENT_BASE_URL + "/state/" + pet_state["pet_id"], headers, HTTPClient.METHOD_GET)
+
+func _on_settlement_action_completed(result, response_code, headers, body, http_node, action_type: String):
+http_node.queue_free()
+
+if response_code == 200:
+var res = JSON.parse_string(body.get_string_from_utf8())
+print("====== 根据地行动完成：", action_type, " ======")
+print("📜 叙事反馈：", res.get("narrative", ""))
+
+# 更新根据地状态
+var changes = res.get("settlement_changes", {})
+if changes.size() > 0:
+_merge_settlement_changes(changes)
+
+# 处理资源消耗
+var cost = res.get("resource_cost", {})
+for item in cost.keys():
+if inventory.has(item):
+inventory[item] -= cost[item]
+print("💸 消耗：", item, " x", cost[item])
+
+# 处理资源获得
+var gain = res.get("resource_gain", {})
+for item in gain.keys():
+add_item(item, gain[item])
+
+# 更新幻灵状态
+var mood_change = res.get("mood_change", 0)
+var trust_change = res.get("trust_change", 0)
+if mood_change != 0:
+pet_state["mood"] += mood_change
+if trust_change != 0:
+pet_state["trust_level"] += trust_change
+
+# 处理解锁标记
+var unlock_flags = res.get("unlock_flags", [])
+for flag in unlock_flags:
+print("🔓 解锁新功能：", flag)
+
+save_game()
+else:
+print("❌ 根据地行动失败，状态码：", response_code)
+
+func _on_sync_settlement_state_completed(result, response_code, headers, body, http_node):
+http_node.queue_free()
+
+if response_code == 200:
+var res = JSON.parse_string(body.get_string_from_utf8())
+settlement_state = res
+print("📊 [根据地] 状态同步成功")
+save_game()
+else:
+print("❌ 根据地状态同步失败，状态码：", response_code)
+
+func _merge_settlement_changes(changes: Dictionary) -> void:
+"""
+合并根据地状态变化
+"""
+for key in changes.keys():
+if key == "buildings":
+for building_id in changes[key].keys():
+settlement_state["buildings"][building_id] = changes[key][building_id]
+elif key == "resource_nodes":
+for node_id in changes[key].keys():
+settlement_state["resource_nodes"][node_id] = changes[key][node_id]
+elif key == "storage":
+for item in changes[key].keys():
+settlement_state["storage"][item] = changes[key][item]
+else:
+settlement_state[key] = changes[key]
+
+print("🔄 [根据地] 状态已更新")
