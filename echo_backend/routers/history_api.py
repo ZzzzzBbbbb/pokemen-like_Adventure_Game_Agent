@@ -86,3 +86,33 @@ def append_to_history(pet_id: str, msg_dict: dict):
     {"sender": "player", "name": "玩家", "text": "你好", "time": "12:00"}
     """
     db_repo.save_message(pet_id, msg_dict)
+
+# routers/history_api.py
+from fastapi import APIRouter, HTTPException
+import json, os
+from typing import List
+
+router = APIRouter(prefix="/api/v1/raising", tags=["History"])
+HISTORY_DIR = "server_storage/history"
+os.makedirs(HISTORY_DIR, exist_ok=True)
+
+def _get_path(pet_id: str) -> str:
+    return os.path.join(HISTORY_DIR, f"{pet_id}.json")
+
+def append_to_history(pet_id: str, message: dict):
+    path = _get_path(pet_id)
+    data = {"messages": []}
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    data["messages"].append(message)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+@router.get("/history/{pet_id}")
+def get_history(pet_id: str):
+    path = _get_path(pet_id)
+    if not os.path.exists(path):
+        return {"messages": []}
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
